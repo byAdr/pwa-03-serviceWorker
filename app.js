@@ -3,7 +3,7 @@
 ***************************/
 // Function to fetch beers from Punk API
 async function modelFetchBeers() {
-  beers = await fetch('https://api.punkapi.com/v2/beers')
+  beers = await fetch('https://punkapi.online/v3/beers?page=1&per_page=80')
     .then(response => response.json())
     .then(data => displayBeers(data))
     .catch(error => console.error('Error fetching beers:', error));
@@ -13,15 +13,15 @@ async function modelFetchBeers() {
   ***************************/
 // function ECMA 6 represent the view template
 var template = (beer) => {
-    url = beer.image_url;
+    url = "https://punkapi.online/v3/images/"+beer.image;
     console.log(url);
-if(url==undefined){
+if(beer.image==undefined){
  url = "beer.jpeg";
 }
   return `
                 <div class="col-md-4 mb-4">
                     <div class="card">
-                        <img src="${url}" class="card-img-top" alt="${beer.name}" style="width:60%;height:200px;" >
+                        <img src="${url}" class="card-img-top" alt="${beer.name}" style="width:100px;height:200px;" >
                         <div class="card-body">
                             <h5 class="card-title">${beer.name}</h5>
                             <p class="card-text">${beer.description}</p>

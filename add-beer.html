@@ -76,7 +76,7 @@
 
             async function initDB() {
                 return new Promise((resolve, reject) => {
-                    var request = indexedDB.open('BeerDB', 1);
+                    var request = indexedDB.open('BeerDB', 2);
                     request.onupgradeneeded = (event) => {
                         // Save the IDBDatabase interface
                         const db = event.target.result;
@@ -85,10 +85,6 @@
                             const store = db.createObjectStore('beers', { keyPath: 'id' });
                             store.createIndex('name', 'name', { unique: false });
                         }
-                        if (!db.objectStoreNames.contains('images')) {
-                            const image = db.createObjectStore("images", { keyPath: "id" });
-                            image.createIndex('name', 'name', { unique: false })
-                        };
                     };
                     //  request.onsuccess = (event => event.target.result);
                     //  return db;
@@ -106,31 +102,41 @@
                 console.log('Name:', name);
                 console.log('Tagline:', tagline);
                 console.log('Description:', description);
-                const Beerdb = window.indexedDB.open("BeerDB", 1);
+                const Beerdb = window.indexedDB.open("BeerDB", 2);
 
                 Beerdb.onsuccess = (event) => {
                     let Mydb = Beerdb.result;
                     const transactionI = Mydb.transaction("beers", "readwrite");        
                     const beerStore = transactionI.objectStore("beers");
-                    function uuidv4() {
+                 /*   function uuidv4() {
                         return "10000000-1000-4000-8000-100000000000".replace(/[018]/g, c =>
                             (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
                         );
-                    }
+                    }*/
 
-                    let beer = { 'id': uuidv4(), 'name': name, 'tagline': tagline, 'description': description }
-                    beerStore.add(beer);
+                    let beer = { 'name': name, 'tagline': tagline, 'description': description }
+                    
+                     const newBeer = beerStore.add(beer);
+                        newBeer.onsuccess = () => {
+                            console.log("Bière ajoutée avec succès !");
+                        };
+                        newBeer.onerror = () => {
+                            console.log("Erreur lors de l'ajout de la bière.");
+                        };
 
                 };
-                /* const db = initDB();
+               /*  const db = initDB();
                  const beerObjectStore = db
-                     .transaction("Beers", "readwrite")
-                     .objectStore("Beers");
+                     .transaction("beers", "readwrite")
+                     .objectStore("beers");
                  let beer = { 'name': name, 'tagline': tagline, 'url_img': image }
                  beerObjectStore.add(beer);*/
 
 
             }
+            Beerdb.onerror = (event) => {
+                console.log("Erreur lors de l'ouverture de la base de données.");
+            };
 
         }
     </script>
